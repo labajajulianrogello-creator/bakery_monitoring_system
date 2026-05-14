@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bakery POS Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet"href="https://cdn.jsdelivr.net/npm/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<div class="sidebar">
+
+  <div class="brand">
+    <div class="logo"><i class="las la-bread-slice"></i></div>
+    <h2>Bakery POS</h2>
+  </div>
+
+  <ul class="menu">
+
+    <li class="menu-item active" onclick="showPage('dashboardPage', this)"> Dashboard</li>
+    <li class="menu-item" onclick="showPage('inventoryPage', this)"> Inventory</li>
+    <li class="menu-item" onclick="showPage('salesPage', this)">Sales</li>
+    <li class="menu-item" onclick="showPage('reportsPage', this)">Reports</li>
+    <li class="menu-item" onclick="showPage('historyPage', this)">History</li>
+    <li class="menu-item" onclick="showPage('settingsPage', this)">Settings</li>
+
+  </ul>
+
+</div>
+
+<div class="main">
+
+<!-- HEADER -->
+
+<div class="header">
+
+<div class="header-left">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="header-title">
+    <h1 id="pageTitle">Dashboard</h1>
+    <small id="bakeryDisplay" class="bakery-name"></small>
+</div>
+</div>
+
+<p id="lastSaved">Last saved: Never</p>
+
+</div>
+
+<!-- ================= DASHBOARD PAGE ================= -->
+
+<div id="dashboardPage" class="page">
+
+<div class="cards">
+
+<div class="card">
+<h3>Today's Sales</h3>
+<p id="todaySales">₱0</p>
+</div>
+
+<div class="card">
+<h3>Total Bread Sold</h3>
+<p id="totalBreadSold">0 pcs</p>
+</div>
+
+<div class="card">
+<h3>Remaining Stock</h3>
+<p id="remainingStock">0 pcs</p>
+</div>
+
+<div class="card">
+<h3>Pull Outs</h3>
+<p id="pullOuts">0 pcs</p>
+</div>
+
+<div class="card">
+<h3>Revenue Today</h3>
+<p id="revenueToday">₱0</p>
+</div>
+
+<div class="card">
+<h3>Top Selling Bread</h3>
+<p id="topBread">None</p>
+<small id="topQty">0 pcs</small>
+</div>
+
+<div class="card">
+<h3>Low Stock Items</h3>
+<p id="lowStockCount">0 items</p>
+</div>
+
+</div>
+
+<div class="low-Stock-panel">
+<h2>⚠️ Low Stock Alert</h2>
+<ul id="lowStockList"></ul>
+</div>
+
+</div>
+
+<!-- ================= INVENTORY PAGE ================= -->
+
+<div id="inventoryPage" class="page" style="display:none;">
+
+<div class="panel">
+
+<h2>Morning Setup</h2>
+
+<div class="form-group">
+<input type="text" id="breadType" placeholder="Bread Type">
+<input type="number" id="pieces" placeholder="Pieces">
+</div>
+
+<div class="form-group">
+<input type="number" id="price" placeholder="Price">
+<input type="number" id="kilos" placeholder="Kilos">
+</div>
+
+<div class="form-group">
+<input type="number" id="purchase" placeholder="Pull Out">
+<input type="number" id="lop" placeholder="L.O.P">
+</div>
+
+<button onclick="addBreadStock()">Add Bread Stock</button>
+
+</div>
+
+</div>
+
+<!-- ================= SALES PAGE ================= -->
+
+<div id="salesPage" class="page" style="display:none;">
+
+<div class="panel">
+
+<h2>Customer Purchase</h2>
+
+<div class="form-group">
+
+<div class="search-select">
+  <input type="text" id="saleBread" placeholder="Type bread name..." autocomplete="off" onkeyup="filterBreadOptions()">
+  <div id="breadDropdown" class="bread-dropdown"></div>
+</div>
+
+<input type="number" id="saleQty" placeholder="Quantity">
+
+</div>
+
+<button onclick="recordSale()">Record Sale</button>
+
+<div class="quick-buttons">
+
+<button onclick="quickAdd(1)">+1</button>
+<button onclick="quickAdd(5)">+5</button>
+<button onclick="quickAdd(10)">+10</button>
+<button onclick="quickAdd(20)">+20</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= REPORTS PAGE ================= -->
+
+<div id="reportsPage" class="page" style="display:none;">
+
+<div class="panel">
+
+<h2>Today's Report</h2>
+
+<div class="table-container">
+
+<table class="report-table">
+
+<thead>
+<tr>
+<th>Bread</th>
+<th>Kilos</th>
+<th>Price</th>
+<th>Pieces</th>
+<th>Pieces Amount</th>
+<th>L.O.P</th>
+<th>L.O.P Amount</th>
+<th>Pull-out</th>
+<th>Pull-out Amount</th>
+<th>L.O.T</th>
+<th>L.O.T Amount</th>
+<th>Sold</th>
+<th>Sold Amount</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="reportTableTop"></tbody>
+
+</table>
+
+</div>
+
+<br>
+<button onclick="downloadCSV()">Download Report</button>
+
+</div>
+
+</div>
+
+<!-- ================= HISTORY PAGE ================= -->
+
+<div id="historyPage" class="page" style="display:none;">
+    <input type="text" id="historySearch" 
+    placeholder="Search bread..."onkeyup="renderHistory()">
+
+<div class="panel">
+
+<h2>Customer Purchase History</h2>
+
+<div class="table-container">
+
+<table class="report-table">
+
+<thead>
+<tr>
+<th>Date & Time</th>
+<th>Bread</th>
+<th>Quantity</th>
+<th>Total Amount</th>
+</tr>
+</thead>
+
+<tbody id="historyTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= SETTINGS PAGE ================= -->
+
+<div id="settingsPage" class="page" style="display:none;">
+
+<div class="panel">
+
+<h2>Settings</h2>
+
+<!-- APPEARANCE -->
+
+<h3 style="margin-bottom:10px;">Appearance</h3>
+
+<div class="quick-buttons">
+
+<button onclick="setTheme('light')">
+☀️ Light Mode
+</button>
+
+<button onclick="setTheme('dark')">
+🌙 Dark Mode
+</button>
+
+</div>
+
+<br>
+
+<!-- BAKERY INFO -->
+
+<h3 style="margin-bottom:10px;">Bakery Information</h3>
+
+<div class="form-group">
+<input type="text" id="bakeryName" placeholder="Bakery Name">
+<input type="text" id="ownerName" placeholder="Owner Name">
+</div>
+
+<div class="form-group">
+<input type="text" id="contactNumber" placeholder="Contact Number">
+</div>
+
+<button onclick="saveBakeryInfo()">
+Save Bakery Information
+</button>
+
+<br><br>
+
+<!-- INVENTORY -->
+
+<h3 style="margin-bottom:10px;">Inventory</h3>
+
+<div class="form-group">
+<input type="number" id="lowStockAlert" placeholder="Low Stock Alert">
+</div>
+
+<button onclick="saveLowStock()">
+Save Low Stock Alert
+</button>
+
+<br><br>
+
+<!-- DATA -->
+
+<h3 style="margin-bottom:10px;">Data</h3>
+
+<div class="quick-buttons">
+
+<button onclick="downloadCSV()">
+Export Backup
+</button>
+
+<button onclick="clearHistory()">
+Clear History
+</button>
+
+<button onclick="resetSystem()">
+Reset System
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
